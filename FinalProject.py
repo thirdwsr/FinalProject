@@ -116,6 +116,12 @@ class Reservation():
             duration_input = input("Duration of your parking (1-11): ")
             if self.is_valid_duration(duration_input):
                 self.duration = int(duration_input)
+                # check duration over operating hours
+                time_num = int(self.time[:2])
+                self.store_time = [time_num + i for i in range(self.duration)]
+                if self.store_time[-1] >= 22:
+                    print("Parking duration exceeds closing time (22:00)")
+                    return False
                 break
             else:
                 print("Invalid duration input")
@@ -127,7 +133,6 @@ class Reservation():
             bookedslots = set()
             for line in reservation:
                 parts = line.split()
-                print(parts)
                 if len(parts) == 0:
                     break
                 date = parts[1]
@@ -136,12 +141,9 @@ class Reservation():
                 if self.date == date:
                     if len(set(self.store_time).intersection(booked_time)) > 0:
                         bookedslots.update(slot)
-                print(slot, bookedslots, self.store_time, booked_time)
 
             total_slot = set(range(1, 16))
-            print(total_slot, bookedslots)
             self.available_slot = list(total_slot - set([int(x) for x in bookedslots]))
-
             if not self.available_slot:
                 print("All slots are booked")
             else:
@@ -192,7 +194,13 @@ if username is not None:
     reservation = Reservation(username)
     reservation.get_date()
     reservation.get_time()
-    reservation.get_duration()
+    while reservation.get_duration() == False:
+        ask = input(f"1. Exit\n2. Try again\n1 or 2:")
+        if ask == 1:
+            exit()
+        else:
+            reservation.get_date()
+            reservation.get_time()
     reservation.check_availability()
     reservation.get_slot()
     reservation.store_informations()
