@@ -82,7 +82,7 @@ class Reservation():
     def is_valid_time(self, time):
         try:
             time_obj = datetime.strptime(time, "%H:%M").time()
-            return datetime.strptime("10:00", "%H:%M").time() <= time_obj <= datetime.strptime("21:00", "%H:%M").time()
+            return datetime.strptime("10:00", "%H:%M").time() <= time_obj <= datetime.strptime("21:00", "%H:%M").time() and time.endswith(":00")
         except ValueError:
             return False
 
