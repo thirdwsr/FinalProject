@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
+from datetime import datetime
 
 class ReservationSystemGUI:
     def __init__(self, root):
@@ -39,7 +40,13 @@ class ReservationSystemGUI:
                 time = parts[2][:2] + ":00"
                 duration = len(parts[2].split(","))
                 slot = parts[3]
+                # Convert the reservation date string to a datetime object
+                reservation_date = datetime.strptime(date, "%Y-%m-%d").date()
+
                 if name == username:
+                    # Check if the reservation date is in the past
+                    if reservation_date < datetime.now().date():
+                       continue
                     booking_found = f"Username: {name}\nDate: {date}\nStarting time: {time}\nDuration: {duration}\nSlot: {slot}"
                     bookings_found.append(booking_found)
 
