@@ -1,154 +1,100 @@
 import bcrypt
+import tkinter as tk
 from datetime import datetime
 from tkinter import *
-from tkinter.font import *
-import tkinter as tk
 from tkinter import simpledialog, messagebox
+from tkinter.font import *
 
 user_file = "users.txt"
 reservations_file = "reservations.txt"
 
 # Create an account
 class Register:
-    def __init__(self, master, show_welcome_callback, show_buttons_callback, clear_content_callback):
-        self.master = master
-        self.show_welcome_callback = show_welcome_callback
+    def __init__(self, on_success, on_back):
+        self.on_success = on_success
+        self.on_back = on_back
 
-        self.frame = tk.Frame(self.master)
-        self.frame.place(relx=0.5, rely=0.5, anchor="center")
+        self.root = tk.Tk()
+        self.root.title("Register")
+        self.root.geometry("600x400")
 
-        self.label_username = tk.Label(self.frame, text="Create a username:")
+        self.label_username = tk.Label(self.root, text="Create a username:")
         self.label_username.pack()
 
-        self.entry_username = tk.Entry(self.frame)
+        self.entry_username = tk.Entry(self.root)
         self.entry_username.pack()
 
-        self.label_password = tk.Label(self.frame, text="Create a password:")
+        self.label_password = tk.Label(self.root, text="Create a password:")
         self.label_password.pack()
 
-        self.entry_password = tk.Entry(self.frame, show="*")
+        self.entry_password = tk.Entry(self.root, show="*")
         self.entry_password.pack()
 
-        self.button_register = tk.Button(self.frame, text="Register", command=self.create_account)
+        self.button_register = tk.Button(self.root, text="Register", command=self.create_account)
         self.button_register.pack()
 
-        self.show_buttons_callback = show_buttons_callback
-
-        self.clear_content_callback = clear_content_callback
-
     def create_account(self):
-        self.username = self.entry_username.get()
-        self.password = self.entry_password.get()
+        username = self.entry_username.get()
+        password = self.entry_password.get()
 
         while True:
-            if len(self.password) <= 6:
+            if len(password) <= 6:
                 messagebox.showerror("Error", "Your password is too short")
                 self.entry_username.delete(0, tk.END)
                 self.entry_password.delete(0, tk.END)
                 return
 
             with open(user_file, "r") as file:
-                if self.username not in [line.split()[0] for line in file]:
-                    hashed_password = bcrypt.hashpw(self.password.encode(), bcrypt.gensalt())
+                if username not in [line.split()[0] for line in file]:
+                    hashed_password = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
                     with open(user_file, "a") as file:
-                        file.write(f"{self.username} {hashed_password.decode()}\n")
+                        file.write(f"{username} {hashed_password.decode()}\n")
                         messagebox.showinfo("Success", "Your account is successfully created")
-                        self.frame.pack_forget()
 
-                        # Call the callback to show the welcome frame in the main application
-                        self.show_welcome_callback()
+                    # Clear registration content
+                    self.label_username.pack_forget()
+                    self.entry_username.pack_forget()
+                    self.label_password.pack_forget()
+                    self.entry_password.pack_forget()
+                    self.button_register.pack_forget()
 
-                        # Clear the registration frame
-                        self.frame.pack_forget()
+                    # Call the on_success function
+                    self.on_success()
 
-                        # Show the buttons again
-                        self.show_buttons_callback()
-
-                        # Call the callback to clear the content
-                        self.clear_content_callback()
-
+                    self.root.destroy()
                     break
                 else:
                     messagebox.showerror("Error", "Username has been used")
                     self.entry_username.delete(0, tk.END)
                     self.entry_password.delete(0, tk.END)
                     return
-
-class EzParkApp:
-    def __init__(self):
-        self.root = tk.Tk()
-        self.root.title("ezpark")
-        self.root.geometry("600x400")
-        self.root.resizable(height=False, width=False)
-
-        self.label_welcome = tk.Label(self.root, text="Hello, welcome to ezpark")
-        self.label_welcome["font"] = ["Lato", 25, "bold"]
-        self.label_welcome["fg"] = "white"
-        self.label_welcome.pack(pady=180)
-
-        self.login_button = tk.Button(self.root, text="Login", command=self.login_clicked, width=15)
-        self.register_button = tk.Button(self.root, text="Register", command=self.register_clicked, width=15)
-
-        # Set a timer to clear content after 5000 milliseconds (5 seconds)
-        self.root.after(5000, self.clear_welcome)
-    
-    def clear_content(self):
-        self.label_welcome.pack_forget()
-    
-    def show_buttons(self):
-        self.label_welcome.pack_forget()
-        self.login_button.pack(side="top", pady=(160, 10), anchor="center")
-        self.register_button.pack(side="top", pady=10, anchor="center")
-
-    def clear_welcome(self):
-        self.label_welcome.pack_forget()
-        self.login_button.pack(side="top", pady=(160, 10), anchor="center")
-        self.register_button.pack(side="top", pady=10, anchor="center")
-
-    def register_clicked(self):
-        self.label_welcome.pack_forget()
-        self.login_button.pack_forget()
-        self.register_button.pack_forget()
-        Register(self.root, self.show_welcome, self.show_buttons, self.clear_content)
-
-    def login_clicked(self):
-        # To be implemented
-        print("Login clicked, to be implemented")
-
-    def show_welcome(self):
-        self.clear_welcome()
-
-    def run(self):
-        self.root.mainloop()
-
-
 # LogIn process
 class LogIn:
-    def __init__(self):
-        self.check_username = None
-        self.check_password = None
-    
     def check(self):
         while True:
-            self.check_username = input("Enter a username: ")
-            self.check_password = input("Enter a password: ")
+            check_username = simpledialog.askstring("Enter a username", "Enter a username:")
+            if check_username is None:
+                return None  # Exit if user clicks "Cancel"
+            check_password = simpledialog.askstring("Enter a password", "Enter a password:")
+            if check_password is None:
+                return None  # Exit if user clicks "Cancel"
             with open(user_file, "r") as file:
                 read = file.readlines()
                 for line in read:
                     parts = line.split(" ")
                     username = parts[0]
                     stored_password = parts[1].strip()
-                    if self.check_username == username:
-                        # Verify the password using the stored salt
-                        if bcrypt.checkpw(self.check_password.encode(), stored_password.encode()):
-                            print(f"Hello {username}, Welcome to CarParkBooking")
-                            return username  # Return the username if login is successful
+                    if check_username == username:
+                        if bcrypt.checkpw(check_password.encode(), stored_password.encode()):
+                            print(f"Hello {username}, Welcome to ezpark")
+                            return username
                         else:
                             print("Your password is incorrect")
                             break
                 else:
                     print("Your username is not found")
                     continue
+
 
 # Reservation
 class Reservation():
@@ -256,10 +202,6 @@ class Reservation():
             times_str = ",".join(map(str, self.store_time))
             file.write(f"{self.username} {self.date} {times_str} {self.slot}\n")
 
-ezpark_app = EzParkApp()
-ezpark_app.run()
-
-"""""
 def clear_welcome():
     label_welcome.pack_forget()
     login_button.pack(side="top", pady=(160, 10), anchor="center")
@@ -270,10 +212,7 @@ def clear_login_register():
     register_button.pack_forget()
 
 def register_clicked():
-    login_button.pack_forget()
-    register_button.pack_forget()
-    register_gui = Register(root, label_welcome)
-    register_gui.run()
+    register_gui = Register(on_success=clear_welcome, on_back=clear_welcome)
 
 def login_clicked():
     login = LogIn()
@@ -297,46 +236,3 @@ register_button = Button(root, text="Register", command=register_clicked, width=
 root.after(1000, clear_welcome)
 
 root.mainloop()
-"""
-
-
-
-"""""
-print("Hello, Welcome to CarParkBooking")
-choice = input("Do you already have an account? (yes or no): ")
-username = None
-while True:
-    if choice.upper().strip() == "YES":
-        login = LogIn()
-        username = login.check()
-        break
-    elif choice.upper().strip() == "NO":
-        signin = Register()
-        signin.create_account()
-        login = LogIn()
-        username = login.check()
-        break
-    else:
-        print("Only Yes or No is required")
-        choice = input("Do you already have an account? (yes or no): ")
-        continue
-print("Appreciate your presence today")
-
-if username is not None:
-    reservation = Reservation(username)
-    reservation.get_date()
-    reservation.get_time()
-    while reservation.get_duration() == False:
-        ask = input(f"1. Exit\n2. Try again\n1 or 2:")
-        if ask == 1:
-            exit()
-        else:
-            reservation.get_date()
-            reservation.get_time()
-    reservation.check_availability()
-    reservation.get_slot()
-    reservation.store_informations()
-    print("Your booking is done. Thank you for choosing CarParkBooking")
-else:
-    print("Error: Login information not available.")
-"""
