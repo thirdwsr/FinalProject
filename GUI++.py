@@ -54,19 +54,12 @@ class Register:
                         file.write(f"{self.username} {hashed_password.decode()}\n")
                         messagebox.showinfo("Success", "Your account is successfully created")
                         self.frame.pack_forget()
-
-                        # Call the callback to show the welcome frame in the main application
-                        self.show_welcome_callback()
-
-                        # Clear the registration frame
-                        self.frame.pack_forget()
-
-                        # Show the buttons again
-                        self.show_buttons_callback()
-
-                        # Call the callback to clear the content
-                        self.clear_content_callback()
-
+                        self.label_username.pack_forget()
+                        self.label_password.pack_forget()
+                        self.entry_username.pack_forget()
+                        self.entry_password.pack_forget()
+                        self.button_register.pack_forget()
+                        self.show_buttons_callback() # this line is the problem
                     break
                 else:
                     messagebox.showerror("Error", "Username has been used")
@@ -90,7 +83,7 @@ class EzParkApp:
         self.register_button = tk.Button(self.root, text="Register", command=self.register_clicked, width=15)
 
         # Set a timer to clear content after 5000 milliseconds (5 seconds)
-        self.root.after(5000, self.clear_welcome)
+        self.root.after(2000, self.clear_welcome)
     
     def clear_content(self):
         self.label_welcome.pack_forget()
@@ -99,6 +92,7 @@ class EzParkApp:
         self.label_welcome.pack_forget()
         self.login_button.pack(side="top", pady=(160, 10), anchor="center")
         self.register_button.pack(side="top", pady=10, anchor="center")
+        self.root.update()
 
     def clear_welcome(self):
         self.label_welcome.pack_forget()
