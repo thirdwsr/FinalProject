@@ -61,7 +61,7 @@ class ReservationSystemGUI:
                 self.show_message("Bookings Found", result_text)
                 #self.result_label.config(text=result_text)
             else:
-                self.show_message("Booking Not Found", "There is no booking with this username")
+                self.show_message("Booking Not Found", "This username has no booking")
 
     def check_cancellation(self):
         username = self.username_entry.get()
@@ -91,7 +91,7 @@ class ReservationSystemGUI:
                 self.show_message("Bookings Found", result_text)
                 self.result_label.config(text=result_text)
             else:
-                self.show_message("Booking Not Found", "There is no cancellation with this username")
+                self.show_message("Booking Not Found", "This username has no cancellation")
         
 
     def show_message(self, title, message):
