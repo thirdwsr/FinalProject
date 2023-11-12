@@ -192,7 +192,7 @@ class Reservation:
             if not self.available_slot:
                 messagebox.showinfo("ezpark", "All slots are booked")
             else:
-                messagebox.showinfo("ezpark", f"Available slots are: {', '.join(map(str, self.available_slot))}")
+                messagebox.showinfo("ezpark", f"Available slot(s) are: {', '.join(map(str, self.available_slot))}")
 
     def get_slot(self):
         while True:
@@ -246,7 +246,8 @@ class Reservation:
                 updated_lines.append(line)
         with open(reservations_file, "w") as file:
             file.writelines(updated_lines)
-            
+
+
 # Main code
 root = tk.Tk()
 root.withdraw()
