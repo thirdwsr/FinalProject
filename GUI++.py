@@ -79,7 +79,7 @@ class EzParkApp:
         self.label_welcome["fg"] = "white"
         self.label_welcome.pack(pady=180)
 
-        self.login_button = tk.Button(self.root, text="Log In", command=self.login_clicked, width=15)
+        self.login_button = tk.Button(self.root, text="Login", command=self.login_clicked, width=15)
         self.register_button = tk.Button(self.root, text="Sign Up", command=self.register_clicked, width=15)
 
         # Set a timer to clear content after 5000 milliseconds (5 seconds)
