@@ -1,5 +1,6 @@
 import bcrypt
 from datetime import datetime
+import calendar
 
 user_file = "users.txt"
 reservations_file = "reservations.txt"
@@ -75,9 +76,25 @@ class Reservation():
 
     def is_valid_date(self, date):
         try:
-            datetime.strptime(date, "%Y-%m-%d")
-            return True
+            # Parse the input date
+            date_obj = datetime.strptime(date, "%Y-%m-%d").date()
+
+            # Get the current date
+            current_date = datetime.now().date()
+
+            # Check if the date is not in the past and is a valid future date
+            if date_obj >= current_date:
+                # Check if the date exists in the calendar
+                _, max_days = calendar.monthrange(date_obj.year, date_obj.month)
+                if 1 <= date_obj.day <= max_days:
+                    return True
+                else:
+                    return False
+            else:
+                return False
+
         except ValueError:
+            # If there is a ValueError, it means the date format is incorrect
             return False
 
     def is_valid_time(self, time):
