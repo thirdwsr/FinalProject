@@ -9,17 +9,17 @@ import calendar
 user_file = "users.txt"
 reservations_file = "reservations.txt"
 
-class Register:
+class Signup:
     def __init__(self):
         self.username = simpledialog.askstring("ezpark", "Create a username:")
-        self.password = simpledialog.askstring("ezpark", "Create a password:")
+        self.password = simpledialog.askstring("ezpark", "Create a password:", show="*")
 
     def create_account(self):
         while True:
             if len(self.password) <= 6:
                 messagebox.showerror("ezpark", "Your password is too short")
                 self.username = simpledialog.askstring("ezpark", "Create a username:")
-                self.password = simpledialog.askstring("ezpark", "Create a password:")
+                self.password = simpledialog.askstring("ezpark", "Create a password:", show="*")
             else:
                 with open(user_file, "r") as file:
                     if self.username not in [line.split()[0] for line in file]:
@@ -31,7 +31,7 @@ class Register:
                     else:
                         messagebox.showerror("ezpark", "Username has been used")
                         self.username = simpledialog.askstring("ezpark", "Create a different username:")
-                        self.password = simpledialog.askstring("ezpark", "Create a password:")
+                        self.password = simpledialog.askstring("ezpark", "Create a password:", show="*")
 
 class LogIn:
     def __init__(self):
@@ -43,7 +43,7 @@ class LogIn:
             self.check_username = simpledialog.askstring("ezpark", "Enter a username:")
             if self.check_username is None:
                 sys.exit()  # Exit if user clicks "Cancel"
-            self.check_password = simpledialog.askstring("ezpark", "Enter a password:")
+            self.check_password = simpledialog.askstring("ezpark", "Enter a password:", show="*")
             if self.check_password is None:
                 sys.exit()  # Exit if user clicks "Cancel"
             with open(user_file, "r") as file:
@@ -203,7 +203,7 @@ while True:
         username = login.check()
         break
     elif choice.upper().strip() == "NO":
-        signin = Register()
+        signin = Signup()
         signin.create_account()
         login = LogIn()
         username = login.check()

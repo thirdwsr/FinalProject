@@ -6,7 +6,7 @@ user_file = "users.txt"
 reservations_file = "reservations.txt"
 
 # Create an account
-class Register:
+class Signup:
     def __init__(self):
         self.username = input("Create a username: ")
         self.password = input("Create a password: ")
@@ -199,7 +199,7 @@ while True:
         username = login.check()
         break
     elif choice.upper().strip() == "NO":
-        signin = Register()
+        signin = Signup()
         signin.create_account()
         login = LogIn()
         username = login.check()

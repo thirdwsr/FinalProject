@@ -9,7 +9,7 @@ user_file = "users.txt"
 reservations_file = "reservations.txt"
 
 # Create an account
-class Register:
+class Signup:
     def __init__(self, master, show_welcome_callback, show_buttons_callback, clear_content_callback):
         self.master = master
         self.show_welcome_callback = show_welcome_callback
