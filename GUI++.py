@@ -103,7 +103,7 @@ class EzParkApp:
         self.label_welcome.pack_forget()
         self.login_button.pack_forget()
         self.register_button.pack_forget()
-        Register(self.root, self.show_welcome, self.show_buttons, self.clear_content)
+        Signup(self.root, self.show_welcome, self.show_buttons, self.clear_content)
 
     def login_clicked(self):
         # To be implemented
