@@ -41,10 +41,11 @@ class ReservationSystemGUI:
                 duration = len(parts[2].split(","))
                 slot = parts[3]
                 total_payment = parts[4]
+                status = parts[5]
                 # Convert the reservation date string to a datetime object
                 reservation_date = datetime.strptime(date, "%Y-%m-%d").date()
 
-                if name == username:
+                if name == username and status == "booked":
                     # Check if the reservation date is in the past
                     if reservation_date < datetime.now().date():
                        continue
