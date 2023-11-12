@@ -40,6 +40,7 @@ class ReservationSystemGUI:
                 time = parts[2][:2] + ":00"
                 duration = len(parts[2].split(","))
                 slot = parts[3]
+                total_payment = parts[4]
                 # Convert the reservation date string to a datetime object
                 reservation_date = datetime.strptime(date, "%Y-%m-%d").date()
 
@@ -47,7 +48,7 @@ class ReservationSystemGUI:
                     # Check if the reservation date is in the past
                     if reservation_date < datetime.now().date():
                        continue
-                    booking_found = f"Username: {name}\nDate: {date}\nStarting time: {time}\nDuration: {duration}\nSlot: {slot}"
+                    booking_found = f"Username: {name}\nDate: {date}\nStarting time: {time}\nDuration: {duration}\nSlot: {slot}\nTotal payment: {total_payment} baht"
                     bookings_found.append(booking_found)
 
             if bookings_found:

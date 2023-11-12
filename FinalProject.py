@@ -71,6 +71,7 @@ class Reservation():
         self.available_slot = None
         self.slot = None
         self.store_time = None
+        self.price = 50 #50 baht per hour
 
     def is_valid_date(self, date):
         try:
@@ -160,12 +161,14 @@ class Reservation():
             else:
                 self.slot = picked_slot
                 break
+        global total_price
+        total_price = self.duration*self.price
     
     def store_informations(self):
         with open(reservations_file, "a") as file:
             # Join the list of times as a comma-separated string without spaces
             times_str = ",".join(map(str, self.store_time))
-            file.write(f"{self.username} {self.date} {times_str} {self.slot}\n")
+            file.write(f"{self.username} {self.date} {times_str} {self.slot} {self.duration*self.price}\n")
 
 
 # Main code
@@ -190,6 +193,7 @@ while True:
         continue
 print("Appreciate your presence today")
 
+total_price = 0
 if username is not None:
     reservation = Reservation(username)
     reservation.get_date()
@@ -203,7 +207,18 @@ if username is not None:
             reservation.get_time()
     reservation.check_availability()
     reservation.get_slot()
-    reservation.store_informations()
-    print("Your booking is done. Thank you for choosing CarParkBooking")
+    print(f"Your total payment is {total_price} baht")
+    while True:
+        ask = input("Do you want to proceed?(yes or no): ")
+        if ask.upper().strip() == "YES":
+            reservation.store_informations()
+            print("Your booking is done. Thank you for choosing CarParkBooking.")
+            break
+        elif ask.upper().strip() == "NO":
+            print("We hope to see you again.")
+            break
+        else:
+            print("Only yes or no is required")
+            continue
 else:
     print("Error: Login information not available.")

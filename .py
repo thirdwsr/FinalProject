@@ -1,49 +1,47 @@
-import tkinter as tk
-from tkinter import simpledialog, messagebox
 import bcrypt
 from datetime import datetime
-import sys
 
 user_file = "users.txt"
 reservations_file = "reservations.txt"
 
+# Create an account
 class Register:
     def __init__(self):
-        self.username = simpledialog.askstring("ezpark", "Create a username:")
-        self.password = simpledialog.askstring("ezpark", "Create a password:")
+        self.username = input("Create a username: ")
+        self.password = input("Create a password: ")
 
     def create_account(self):
         while True:
             if len(self.password) <= 6:
-                messagebox.showerror("ezpark", "Your password is too short")
-                self.username = simpledialog.askstring("ezpark", "Create a username:")
-                self.password = simpledialog.askstring("ezpark", "Create a password:")
+                print("Your password is too short")
+                self.username = input("Create a username: ")
+                self.password = input("Create a password: ")
             else:
                 with open(user_file, "r") as file:
                     if self.username not in [line.split()[0] for line in file]:
+                        # Hash the password with the generated salt
                         hashed_password = bcrypt.hashpw(self.password.encode(), bcrypt.gensalt())
+                        
+                        # Append the username, salt, and hashed password to users.txt
                         with open(user_file, "a") as file:
                             file.write(f"{self.username} {hashed_password.decode()}\n")
-                            messagebox.showinfo("ezpark", "Your account is successfully created")
+                            print("Your account is successfully created")
                         break
                     else:
-                        messagebox.showerror("ezpark", "Username has been used")
-                        self.username = simpledialog.askstring("ezpark", "Create a different username:")
-                        self.password = simpledialog.askstring("ezpark", "Create a password:")
+                        print("Username has been used")
+                        self.username = input("Create a different username: ")
+                        self.password = input("Create a password: ")
 
+# LogIn process
 class LogIn:
     def __init__(self):
         self.check_username = None
         self.check_password = None
-
+    
     def check(self):
         while True:
-            self.check_username = simpledialog.askstring("ezpark", "Enter a username:")
-            if self.check_username is None:
-                sys.exit()  # Exit if user clicks "Cancel"
-            self.check_password = simpledialog.askstring("ezpark", "Enter a password:")
-            if self.check_password is None:
-                sys.exit()  # Exit if user clicks "Cancel"
+            self.check_username = input("Enter a username: ")
+            self.check_password = input("Enter a password: ")
             with open(user_file, "r") as file:
                 read = file.readlines()
                 for line in read:
@@ -51,17 +49,20 @@ class LogIn:
                     username = parts[0]
                     stored_password = parts[1].strip()
                     if self.check_username == username:
+                        # Verify the password using the stored salt
                         if bcrypt.checkpw(self.check_password.encode(), stored_password.encode()):
-                            messagebox.showinfo("ezpark", f"Hello {username}")
-                            return username
+                            print(f"Hello {username}, Welcome to CarParkBooking")
+                            return username  # Return the username if login is successful
                         else:
-                            messagebox.showerror("ezpark", "Your password is incorrect")
+                            print("Your password is incorrect")
                             break
                 else:
-                    messagebox.showerror("ezpark", "Your username is not found")
+                    print("Your username is not found")
                     continue
 
-class Reservation:
+
+# Reservation
+class Reservation():
     def __init__(self, username):
         self.username = username
         self.date = None
@@ -70,7 +71,8 @@ class Reservation:
         self.available_slot = None
         self.slot = None
         self.store_time = None
-        self.price = 50 # 50 baht per hour
+        self.price = 50 #50 baht per hour
+        self.payment = None
 
     def is_valid_date(self, date):
         try:
@@ -82,7 +84,7 @@ class Reservation:
     def is_valid_time(self, time):
         try:
             time_obj = datetime.strptime(time, "%H:%M").time()
-            return datetime.strptime("10:00", "%H:%M").time() <= time_obj < datetime.strptime("21:00", "%H:%M").time() and time.endswith(":00")
+            return datetime.strptime("10:00", "%H:%M").time() <= time_obj <= datetime.strptime("21:00", "%H:%M").time() and time.endswith(":00")
         except ValueError:
             return False
 
@@ -95,41 +97,36 @@ class Reservation:
 
     def get_date(self):
         while True:
-            date_input = simpledialog.askstring("ezpark", "Fill in your desired date (YYYY-MM-DD):")
-            if date_input is None:
-                sys.exit()  # Exit if user clicks "Cancel"
+            date_input = input("Fill in your desired date (YYYY-MM-DD): ")
             if self.is_valid_date(date_input):
                 self.date = date_input
                 break
             else:
-                messagebox.showerror("ezpark", "Invalid date input")
+                print("Invalid date input")
 
     def get_time(self):
         while True:
-            time_input = simpledialog.askstring("ezpark", "Enter your time (starting from 10:00 - 21:00):")
-            if time_input is None:
-                sys.exit()  # Exit if user clicks "Cancel"
+            time_input = input("Enter your time (starting from 10:00 - 21:00): ")
             if self.is_valid_time(time_input):
                 self.time = time_input
                 break
             else:
-                messagebox.showerror("ezpark", "Invalid time input")
+                print("Invalid time input")
 
     def get_duration(self):
         while True:
-            duration_input = simpledialog.askstring("ezpark", "Duration of your parking (1-11):")
-            if duration_input is None:
-                sys.exit()  # Exit if user clicks "Cancel"
+            duration_input = input("Duration of your parking (1-11): ")
             if self.is_valid_duration(duration_input):
                 self.duration = int(duration_input)
+                # check duration over operating hours
                 time_num = int(self.time[:2])
                 self.store_time = [time_num + i for i in range(self.duration)]
                 if self.store_time[-1] >= 22:
-                    messagebox.showerror("ezpark", "Parking duration exceeds closing time (22:00)")
+                    print("Parking duration exceeds closing time (22:00)")
                     return False
                 break
             else:
-                messagebox.showerror("ezpark", "Invalid duration input")
+                print("Invalid duration input")
 
     def check_availability(self):
         time_num = int(self.time[:2])
@@ -143,41 +140,44 @@ class Reservation:
                 date = parts[1]
                 booked_time = [int(x) for x in parts[2].split(",")]
                 slot = parts[3]
+                payment = parts[4]
+                self.payment = payment
                 if self.date == date:
                     if len(set(self.store_time).intersection(booked_time)) > 0:
                         bookedslots.update(slot)
+
             total_slot = set(range(1, 16))
             self.available_slot = list(total_slot - set([int(x) for x in bookedslots]))
             if not self.available_slot:
-                messagebox.showinfo("ezpark", "All slots are booked")
+                print("All slots are booked")
             else:
-                messagebox.showinfo("ezpark", f"Available slots are: {', '.join(map(str, self.available_slot))}")
+                print("Available slots are:", end=" ")
+                print(", ".join(map(str, self.available_slot)))
 
     def get_slot(self):
+        picked_slot = int(input("choose your slot: "))
         while True:
-            picked_slot = simpledialog.askinteger("ezpark", "Choose your slot:", minvalue=1, maxvalue=15)
-            if picked_slot is None:
-                sys.exit()  # Exit if user clicks "Cancel"
             if picked_slot not in self.available_slot or picked_slot > 15 or picked_slot < 1:
-                messagebox.showerror("ezpark", "Your picked slot is not valid")
+                print("Your picked slot is not valid")
+                picked_slot = int(input("choose your slot: "))
+                continue
             else:
                 self.slot = picked_slot
                 break
-        global total_price
-        total_price = self.duration*self.price
-
+    
     def store_informations(self):
         with open(reservations_file, "a") as file:
+            # Join the list of times as a comma-separated string without spaces
             times_str = ",".join(map(str, self.store_time))
             file.write(f"{self.username} {self.date} {times_str} {self.slot} {self.duration*self.price}\n")
+            global total_price
+            total_price = self.duration*self.price
+
 
 # Main code
-root = tk.Tk()
-root.withdraw()
-
-messagebox.showinfo("ezpark", "Welcome to ezpark")
-
-choice = simpledialog.askstring("ezpark", "Do you already have an account? (yes or no):")
+# LogIn system
+print("Hello, Welcome to CarParkBooking")
+choice = input("Do you already have an account? (yes or no): ")
 username = None
 while True:
     if choice.upper().strip() == "YES":
@@ -191,11 +191,10 @@ while True:
         username = login.check()
         break
     else:
-        messagebox.showerror("ezpark", "Only Yes or No is required")
-        choice = simpledialog.askstring("ezpark", "Do you already have an account? (yes or no):")
+        print("Only Yes or No is required")
+        choice = input("Do you already have an account? (yes or no): ")
         continue
-
-messagebox.showinfo("ezpark", "Appreciate your presence today")
+print("Appreciate your presence today")
 
 total_price = 0
 if username is not None:
@@ -203,22 +202,16 @@ if username is not None:
     reservation.get_date()
     reservation.get_time()
     while reservation.get_duration() == False:
-        ask = simpledialog.askinteger("ezpark", "1. Exit\n2. Try again", minvalue=1, maxvalue=2)
+        ask = input(f"1. Exit\n2. Try again\n1 or 2:")
         if ask == 1:
-            messagebox.showinfo("ezpark", "We hope to see you again")
-            sys.exit()  # Exit if user clicks "Cancel"
+            exit()
         else:
             reservation.get_date()
             reservation.get_time()
     reservation.check_availability()
     reservation.get_slot()
-    price_ask = messagebox.askyesno("ezpark", "Your total payment is {} baht. Do you want to proceed?".format(total_price), icon=messagebox.INFO)
-    if price_ask == 'yes':
-        reservation.store_informations()
-        messagebox.showinfo("ezpark", "Your booking is done. Thank you for choosing CarParkBooking")
-    else:
-        messagebox.showinfo("ezpark", "We hope to see you again")
+    reservation.store_informations()
+    print(f"Your total payment is {total_price} baht")
+    print("Your booking is done. Thank you for choosing CarParkBooking")
 else:
-    messagebox.showerror("ezpark", "Login information not available")
-
-root.mainloop()
+    print("Error: Login information not available.")
