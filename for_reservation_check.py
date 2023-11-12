@@ -89,7 +89,7 @@ class ReservationSystemGUI:
             if bookings_found:
                 result_text = "\n\n".join(bookings_found)
                 self.show_message("Bookings Found", result_text)
-                self.result_label.config(text=result_text)
+                #self.result_label.config(text=result_text)
             else:
                 self.show_message("Booking Not Found", "This username has no cancellation")
         
@@ -99,7 +99,7 @@ class ReservationSystemGUI:
     
     def clear_entry(self):
         self.username_entry.delete(0, 'end')  # Clear the username entry
-        self.result_label.config(text="")  # Clear the result label
+        #self.result_label.config(text="")  # Clear the result label
 
 if __name__ == "__main__":
     reservations_file = "reservations.txt"
