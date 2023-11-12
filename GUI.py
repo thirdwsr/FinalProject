@@ -9,7 +9,7 @@ import calendar
 user_file = "users.txt"
 reservations_file = "reservations.txt"
 
-class Signup:
+class SignUp:
     def __init__(self):
         self.username = simpledialog.askstring("ezpark", "Create a username:")
         self.password = simpledialog.askstring("ezpark", "Create a password:", show="*")
@@ -246,7 +246,7 @@ class Reservation:
                 updated_lines.append(line)
         with open(reservations_file, "w") as file:
             file.writelines(updated_lines)
-    
+            
 # Main code
 root = tk.Tk()
 root.withdraw()
@@ -261,7 +261,7 @@ while True:
         username = login.check()
         break
     elif choice.upper().strip() == "NO":
-        signin = Signup()
+        signin = SignUp()
         signin.create_account()
         login = LogIn()
         username = login.check()
