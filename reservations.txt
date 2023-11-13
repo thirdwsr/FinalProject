@@ -1,2 +1,7 @@
 third 2024-01-01 10,11 2 100 cancelled
 third 2024-01-01 10 1 50 cancelled
+third 2024-01-01 10,11,12 4 150 cancelled
+Python 2024-01-01 12,13,14 10 150 booked
+third 2024-01-01 12,13 10 100 booked
+third 2024-01-01 10,11 4 100 booked
+third 2024-01-01 10,11 12 100 booked

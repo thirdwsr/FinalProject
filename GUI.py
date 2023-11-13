@@ -184,9 +184,9 @@ class Reservation:
                 booked_time = [int(x) for x in parts[2].split(",")]
                 slot = parts[3]
                 status = parts[5]
-                if self.date == date and status == "active":
+                if self.date == date and status == "booked":
                     if len(set(self.store_time).intersection(booked_time)) > 0:
-                        bookedslots.update(slot)
+                        bookedslots.add(slot)
             total_slot = set(range(1, 16))
             self.available_slot = list(total_slot - set([int(x) for x in bookedslots]))
             if not self.available_slot:
